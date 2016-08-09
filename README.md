@@ -28,3 +28,23 @@ To export collection `col1`:
 To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 
 	Meteor.call('mm_import', 'http://xx.yy.zz', ['col1', 'col2'], 'destinationPassword', 'sourcePassword');
+
+### Todo move to this syntax:
+
+Mindmeld.import({
+  sourceUrl: "",
+  sourcePassword: "",
+  collections: [],
+  localPassword: "", // only if running from the client
+
+  keepCurrentData: false,
+  disableValidation: false, // enables https://github.com/aldeed/meteor-collection2#passing-options
+  enableHooks: false // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
+})
+
+Meteor.Settings = {
+  mindmeld: {
+    password: "",
+    allowImport: false
+  }
+}
