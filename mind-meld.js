@@ -4,31 +4,37 @@ Meteor.methods({
     check(collectionName, String);
     check(password, String);
 
-    if (!Meteor.settings.MIND_MELD_TOKEN)
-      throw new Meteor.Error('no token set');
+    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
 
-    if (password !== Meteor.settings.MIND_MELD_TOKEN)
-      throw new Meteor.Error('incorrect password: ' + password);
+    if (password !== Meteor.settings.mindmeld.password)
+      throw new Meteor.Error('incorrect export password');
 
     return MindMeld.export(collectionName);
   },
 
+  mm_import(options) {
+    check(options, {
+      sourceUrl: String,
+      sourcePassword: String,
+      collections: [String],
+      localPassword: String, // only if running from the client
 
-  mm_import(url, collections, destinationPassword, sourcePassword) {
-    check(collections, [String]);
-    check(destinationPassword, String);
-    check(sourcePassword, String);
+      keepCurrentData: Boolean,
+      bypassCollection2: Boolean, // enables https://github.com/aldeed/meteor-collection2#inserting-or-updating-bypassing-collection2-entirely
+      enableHooks: Boolean // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
+    });
 
-    if (!Meteor.settings.MIND_MELD_TOKEN)
-      throw new Meteor.Error('no token set');
-      
-    if (Meteor.isProduction)
-      throw new Meteor.Error('importing not allowed on production deployment, to secure your data');
+    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.allowImport)
+      throw new Meteor.Error('import not allowed according to Meteor.settings.mindmeld.allowImport');
 
-    if (destinationPassword !== Meteor.settings.MIND_MELD_TOKEN)
-      throw new Meteor.Error('incorrect password: ' + destinationPassword);
+    if (!Meteor.settings.mindmeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
 
-    MindMeld.import(url, collections, sourcePassword);
+    if (options.localPassword !== Meteor.settings.mindmeld.password)
+      throw new Meteor.Error('incorrect localPassword');
+
+    MindMeld.import(options);
   }
 });
 
@@ -39,36 +45,42 @@ MindMeld = {
     if (!collection || !(collection instanceof Mongo.Collection ))
       throw new Meteor.Error(collectionName + ' is not a valid collection');
 
-    console.log("dumping " + collectionName);
+    console.log("[MindMeld] dumping " + collectionName);
     return collection.find({}).fetch();
   },
 
-  import(url, collections, password) {
-    const connection = DDP.connect(url);
-    collections.forEach( col => MindMeld.importCollection(connection, col, password) );
-    console.log('done!');
+  import(options) {
+    const connection = DDP.connect(options.sourceUrl);
+    options.collections.forEach( col => MindMeld.importCollection(connection, col, options) );
+    console.log('[MindMeld] done!');
   },
 
-  importCollection(connection, collectionName, password) {
+  importCollection(connection, collectionName, options) {
     const collection = Mongo.Collection.get(collectionName);
     if (!collection instanceof Mongo.Collection)
       throw new Error(collectionName + ' is not a valid collection');
 
-    const dump = connection.call("mm_export", collectionName, password);
+    const dump = connection.call("mm_export", collectionName, options.sourcePassword);
     if (!dump || !dump.length) {
-      console.log('nothing to import');
+      console.log('[MindMeld] nothing to import');
       return;
     }
 
-    console.log('importing ' + dump.length + ' items into ' + collectionName);
-    collection.remove({});
+    if (!options.keepCurrentData) {
+      console.log('[MindMeld] removing all local records from ' + collectionName);
+      collection.remove({});
+    }
 
+    console.log('[MindMeld] importing ' + dump.length + ' items into ' + collectionName);
     dump.forEach(record => {
-      console.log(record._id);
+      console.log('[MindMeld] importing ' + collectionName + ' ' + record._id);
+      const insertOptions = options.bypassCollection2 ? {bypassCollection2:true} : null;
       try {
-        collection.insert(record);
+        options.enableHooks || !collection.direct ?
+          collection.insert(record, insertOptions) :
+          collection.direct.insert(record, insertOptions);
       } catch (e) {
-        console.warn('error while inserting ' + record._id + ' into ' + collectionName);
+        console.warn('[MindMeld] error while inserting ' + record._id + ' into ' + collectionName);
         console.warn(e);
       }
     });
@@ -76,4 +88,4 @@ MindMeld = {
 
 };
 
-Meteor.startup(() => !Meteor.settings.MIND_MELD_TOKEN && console.warn('MindMeld: no token set'));
+Meteor.startup(() => !(Meteor.settings.mindmeld && Meteor.settings.mindmeld.password) && console.warn('MindMeld: no token set'));
