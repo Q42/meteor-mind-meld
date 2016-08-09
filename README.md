@@ -12,11 +12,12 @@ Mind Meld exposes 2 methods: `mm_import` and `mm_export`. Combined, these enable
 ## `mm_export(collectionName, password)`
 The `mm_export` method returns a dump of the collection.
 
-
 ## `mm_import(url, [collections], destinationPassword, sourcePassword)`
-The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally. 
+The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally.
 
 _note that the first password is for the Meteor instance you're call the import method on (destination) while the second password is for the instance you're importing from (source)._
+
+_note that the collection name you're using is the same one you use when creating the collection. So if you're using `const Products = new Mongo.Collection('products')` then you should use `products` (lowercase)._
 
 ### examples
 
