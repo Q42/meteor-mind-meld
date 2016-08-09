@@ -26,4 +26,4 @@ To export collection `col1`:
 
 To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 
-	Meteor.call('mm_import', 'http://xx.yy.zz', ['col1', 'col2'], 'pwd1', 'pwd2');
+	Meteor.call('mm_import', 'http://xx.yy.zz', ['col1', 'col2'], 'destinationPassword', 'sourcePassword');
