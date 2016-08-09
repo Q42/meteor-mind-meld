@@ -12,8 +12,8 @@ Mind Meld exposes 2 methods: `mm_import` and `mm_export`. Combined, these enable
 ## `mm_export(collectionName, password)`
 The `mm_export` method returns a dump of the collection.
 
-## `mm_import(url, [collections], password1, password2)`
-The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally. 
+## `mm_import(url, [collections], destinationPassword, sourcePassword)`
+The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally.
 
 _note that the first password is for the Meteor instance you're call the import method on (destination) while the second password is for the instance you're importing from (source)._
 
@@ -27,4 +27,4 @@ To export collection `col1`:
 
 To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 
-	Meteor.call('mm_import', 'http://xx.yy.zz', ['col1', 'col2'], 'pwd1', 'pwd2');
+	Meteor.call('mm_import', 'http://xx.yy.zz', ['col1', 'col2'], 'destinationPassword', 'sourcePassword');
