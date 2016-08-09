@@ -21,6 +21,9 @@ Meteor.methods({
 
     if (!Meteor.settings.MIND_MELD_TOKEN)
       throw new Meteor.Error('no token set');
+      
+    if (Meteor.isProduction)
+      throw new Meteor.Error('importing not allowed on production deployment, to secure your data');
 
     if (password1 !== Meteor.settings.MIND_MELD_TOKEN)
       throw new Meteor.Error('incorrect password: ' + password1);
