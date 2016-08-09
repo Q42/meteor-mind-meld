@@ -14,10 +14,10 @@ Meteor.methods({
   },
 
 
-  mm_import(url, collections, password1, password2) {
+  mm_import(url, collections, destinationPassword, sourcePassword) {
     check(collections, [String]);
-    check(password1, String);
-    check(password2, String);
+    check(destinationPassword, String);
+    check(sourcePassword, String);
 
     if (!Meteor.settings.MIND_MELD_TOKEN)
       throw new Meteor.Error('no token set');
@@ -25,10 +25,10 @@ Meteor.methods({
     if (Meteor.isProduction)
       throw new Meteor.Error('importing not allowed on production deployment, to secure your data');
 
-    if (password1 !== Meteor.settings.MIND_MELD_TOKEN)
-      throw new Meteor.Error('incorrect password: ' + password1);
+    if (destinationPassword !== Meteor.settings.MIND_MELD_TOKEN)
+      throw new Meteor.Error('incorrect password: ' + destinationPassword);
 
-    MindMeld.import(url, collections, password2);
+    MindMeld.import(url, collections, sourcePassword);
   }
 });
 
