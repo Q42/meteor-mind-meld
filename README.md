@@ -19,10 +19,10 @@ Then add these settings to `settings.json`:
 ## Usage
 Mind Meld exposes 2 DDP methods: `mm_import` and `mm_export`. Combined, these enable transfer of full collections between applications. Both can be called from a browser console but they are protected with a password (`Meteor.settings.mindMeld.password`).
 
-## `mm_export(collectionName, password)`
+## `MindMeld.export(collectionName, password)`
 The `mm_export` method returns a dump of the collection. You generally don't call this method yourself.
 
-## `mm_import({sourceUrl, sourcePassword, collections, localPassword, ...options})`
+## `MindMeld.import({sourceUrl, sourcePassword, collections, localPassword, ...options})`
 The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally.
 
 Because this method default removes all records from your database, you have to specifically enable it using `Meteor.settings.mindMeld.allowImport`. Normally you would disable this on your production system, and enable it on your development and acceptance environments.
@@ -40,11 +40,11 @@ Parameters:
 
 To export collection `col1`:
 
-	Meteor.call('mm_export', 'col1', 'password');
+	MindMeld.export('col1', 'password');
 
 To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 
-	Meteor.call('mm_import', {
+	MindMeld.import({
 	  sourceUrl: "http://xx.yy.zz",
 	  sourcePassword: "PASSWORD1",
 	  collections: ["col1", "col2"],
@@ -53,7 +53,7 @@ To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 
 To import collections without having collection2 meddle with your records:
 
-	Meteor.call('mm_import', {
+	MindMeld.import({
 	  sourceUrl: "http://xx.yy.zz",
 	  sourcePassword: "PASSWORD1",
 	  collections: ["col1", "col2"],

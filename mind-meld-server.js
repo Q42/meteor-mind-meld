@@ -1,11 +1,22 @@
 
 Meteor.methods({
   mm_export(collectionName, password) {
+    return MindMeld.export(collectionName, password);
+  },
+
+  mm_import(options) {
+    MindMeld.import(options);
+  }
+});
+
+
+MindMeld = {
+  export(collectionName, password) {
     check(collectionName, String);
     check(password, String);
 
     if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.password)
-      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password');
+      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password, not exporting');
 
     if (password !== Meteor.settings.mindMeld.password)
       throw new Meteor.Error('incorrect export password');
@@ -13,7 +24,7 @@ Meteor.methods({
     return MindMeld._export(collectionName);
   },
 
-  mm_import(options) {
+  import(options) {
     check(options, {
       sourceUrl: String,
       sourcePassword: String,
@@ -26,7 +37,7 @@ Meteor.methods({
     });
 
     if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.password)
-      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password');
+      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password, not importing');
 
     if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.allowImport)
       throw new Meteor.Error('import not allowed according to Meteor.settings.mindMeld.allowImport');
@@ -35,18 +46,16 @@ Meteor.methods({
       throw new Meteor.Error('incorrect localPassword');
 
     MindMeld._import(options);
-  }
-});
+  },
 
-
-MindMeld = {
   _export(collectionName) {
     const collection = Mongo.Collection.get(collectionName);
     if (!collection || !(collection instanceof Mongo.Collection ))
       throw new Meteor.Error(collectionName + ' is not a valid collection');
 
-    console.log("[MindMeld] dumping " + collectionName);
-    return collection.find({}).fetch();
+    const result = collection.find({}).fetch();
+    console.log("[MindMeld] dumping " + result.length + " records for " + collectionName);
+    return result;
   },
 
   _import(options) {
