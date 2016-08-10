@@ -10,14 +10,14 @@ Most suitable for small datasets.
 Then add these settings to `settings.json`:
 
 	{
-	  mindmeld: {
-	    password: "PASSWORD",
-	    allowImport: false
+	  "mindMeld": {
+	    "password": "PASSWORD",
+	    "allowImport": false
 	  }
 	}
 
 ## Usage
-Mind Meld exposes 2 DDP methods: `mm_import` and `mm_export`. Combined, these enable transfer of full collections between applications. Both can be called from a browser console but they are protected with a password (`Meteor.settings.mindmeld.password`).
+Mind Meld exposes 2 DDP methods: `mm_import` and `mm_export`. Combined, these enable transfer of full collections between applications. Both can be called from a browser console but they are protected with a password (`Meteor.settings.mindMeld.password`).
 
 ## `mm_export(collectionName, password)`
 The `mm_export` method returns a dump of the collection. You generally don't call this method yourself.
@@ -25,13 +25,13 @@ The `mm_export` method returns a dump of the collection. You generally don't cal
 ## `mm_import({sourceUrl, sourcePassword, collections, localPassword, ...options})`
 The `mm_import` method first calls `mm_export` on another Meteor instance, retrieving a collection dump, and imports the dump locally.
 
-Because this method default removes all records from your database, you have to specifically enable it using `Meteor.settings.mindmeld.allowImport`. Normally you would disable this on your production system, and enable it on your development and acceptance environments.
+Because this method default removes all records from your database, you have to specifically enable it using `Meteor.settings.mindMeld.allowImport`. Normally you would disable this on your production system, and enable it on your development and acceptance environments.
 
 Parameters:
 * `sourceUrl` URL to the meteor instance that you want to copy the data from. Has to have this package installed.
-* `sourcePassword` Meteor.settings.mindmeld.password of that Meteor instance.
+* `sourcePassword` Meteor.settings.mindMeld.password of that Meteor instance.
 * `collections` array of names of the collections you want to import. Use the (usually lowercased) name of the mongo collection.
-* `localPassword` Meteor.settings.mindmeld.password of the destination Meteor instance that you're calling this method on.
+* `localPassword` Meteor.settings.mindMeld.password of the destination Meteor instance that you're calling this method on.
 * `keepCurrentData` optionally choose to append the imported data to the existing data in your database. Default `false`, will remove all entries from the collection before importing.
 * `bypassCollection2` optionally choose to [bypass collection2's validation](https://github.com/aldeed/meteor-collection2#inserting-or-updating-bypassing-collection2-entirely), cleaning and autovalues. Defaults to `false` if collection2 is installed, and will use collection2 to validate and clean entries when they're imported.
 * `enableHooks` optionally choose to enable before and after submit hooks, if the collection-hooks package is installed. Defaults to `false`, where the hooks will not be executed, instead using [collection.direct](https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks).

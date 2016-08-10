@@ -4,10 +4,10 @@ Meteor.methods({
     check(collectionName, String);
     check(password, String);
 
-    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.password)
-      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
+    if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password');
 
-    if (password !== Meteor.settings.mindmeld.password)
+    if (password !== Meteor.settings.mindMeld.password)
       throw new Meteor.Error('incorrect export password');
 
     return MindMeld.export(collectionName);
@@ -25,13 +25,13 @@ Meteor.methods({
       enableHooks: Match.Optional(Boolean) // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
     });
 
-    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.password)
-      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
+    if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password');
 
-    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.allowImport)
-      throw new Meteor.Error('import not allowed according to Meteor.settings.mindmeld.allowImport');
+    if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.allowImport)
+      throw new Meteor.Error('import not allowed according to Meteor.settings.mindMeld.allowImport');
 
-    if (options.localPassword !== Meteor.settings.mindmeld.password)
+    if (options.localPassword !== Meteor.settings.mindMeld.password)
       throw new Meteor.Error('incorrect localPassword');
 
     MindMeld.import(options);
@@ -88,4 +88,4 @@ MindMeld = {
 
 };
 
-Meteor.startup(() => !(Meteor.settings.mindmeld && Meteor.settings.mindmeld.password) && console.warn('MindMeld: no password set at Meteor.settings.mindmeld.password'));
+Meteor.startup(() => !(Meteor.settings.mindMeld && Meteor.settings.mindMeld.password) && console.warn('MindMeld: no password set at Meteor.settings.mindMeld.password'));
