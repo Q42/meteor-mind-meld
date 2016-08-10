@@ -20,9 +20,9 @@ Meteor.methods({
       collections: [String],
       localPassword: String, // only if running from the client
 
-      keepCurrentData: Boolean,
-      bypassCollection2: Boolean, // enables https://github.com/aldeed/meteor-collection2#inserting-or-updating-bypassing-collection2-entirely
-      enableHooks: Boolean // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
+      keepCurrentData: Match.Optional(Boolean),
+      bypassCollection2: Match.Optional(Boolean), // enables https://github.com/aldeed/meteor-collection2#inserting-or-updating-bypassing-collection2-entirely
+      enableHooks: Match.Optional(Boolean) // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
     });
 
     if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.allowImport)

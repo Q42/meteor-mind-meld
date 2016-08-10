@@ -1,6 +1,6 @@
 Package.describe({
   name: 'q42:mind-meld',
-  version: '0.0.1',
+  version: '1.0.0',
   summary: 'Easily transfer collection data between Meteor instances.',
   git: '',
   documentation: 'README.md'
