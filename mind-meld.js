@@ -10,7 +10,7 @@ Meteor.methods({
     if (password !== Meteor.settings.mindMeld.password)
       throw new Meteor.Error('incorrect export password');
 
-    return MindMeld.export(collectionName);
+    return MindMeld._export(collectionName);
   },
 
   mm_import(options) {
@@ -34,13 +34,13 @@ Meteor.methods({
     if (options.localPassword !== Meteor.settings.mindMeld.password)
       throw new Meteor.Error('incorrect localPassword');
 
-    MindMeld.import(options);
+    MindMeld._import(options);
   }
 });
 
 
 MindMeld = {
-  export(collectionName) {
+  _export(collectionName) {
     const collection = Mongo.Collection.get(collectionName);
     if (!collection || !(collection instanceof Mongo.Collection ))
       throw new Meteor.Error(collectionName + ' is not a valid collection');
@@ -49,13 +49,13 @@ MindMeld = {
     return collection.find({}).fetch();
   },
 
-  import(options) {
+  _import(options) {
     const connection = DDP.connect(options.sourceUrl);
-    options.collections.forEach( col => MindMeld.importCollection(connection, col, options) );
+    options.collections.forEach( col => MindMeld._importCollection(connection, col, options) );
     console.log('[MindMeld] done!');
   },
 
-  importCollection(connection, collectionName, options) {
+  _importCollection(connection, collectionName, options) {
     const collection = Mongo.Collection.get(collectionName);
     if (!collection instanceof Mongo.Collection)
       throw new Error(collectionName + ' is not a valid collection');
@@ -76,9 +76,11 @@ MindMeld = {
       console.log('[MindMeld] importing ' + collectionName + ' ' + record._id);
       const insertOptions = options.bypassCollection2 ? {bypassCollection2:true} : null;
       try {
-        options.enableHooks || !collection.direct ?
-          collection.insert(record, insertOptions) :
+        if (options.enableHooks || !collection.direct) {
+          collection.insert(record, insertOptions);
+        } else {
           collection.direct.insert(record, insertOptions);
+        }
       } catch (e) {
         console.warn('[MindMeld] error while inserting ' + record._id + ' into ' + collectionName);
         console.warn(e);
