@@ -5,6 +5,12 @@ Meteor.methods({
   },
 
   mm_import(options) {
+    if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindMeld.password, not importing');
+
+    if (options.localPassword !== Meteor.settings.mindMeld.password)
+      throw new Meteor.Error('incorrect localPassword');
+
     MindMeld.import(options);
   }
 });
@@ -29,7 +35,7 @@ MindMeld = {
       sourceUrl: String,
       sourcePassword: String,
       collections: [String],
-      localPassword: String, // only if running from the client
+      localPassword: Match.Optional(String), // only if running from the client
 
       keepCurrentData: Match.Optional(Boolean),
       bypassCollection2: Match.Optional(Boolean), // enables https://github.com/aldeed/meteor-collection2#inserting-or-updating-bypassing-collection2-entirely
@@ -41,9 +47,6 @@ MindMeld = {
 
     if (!Meteor.settings.mindMeld || !Meteor.settings.mindMeld.allowImport)
       throw new Meteor.Error('import not allowed according to Meteor.settings.mindMeld.allowImport');
-
-    if (options.localPassword !== Meteor.settings.mindMeld.password)
-      throw new Meteor.Error('incorrect localPassword');
 
     MindMeld._import(options);
   },
