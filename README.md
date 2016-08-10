@@ -19,7 +19,7 @@ Then add these settings to `settings.json`:
 ## Usage
 Mind Meld exposes 2 DDP methods: `mm_import` and `mm_export`. Combined, these enable transfer of full collections between applications. Both can be called from a browser console but they are protected with a password (`Meteor.settings.mindMeld.password`).
 
-## `MindMeld.export(collectionName, password)`
+## `MindMeld.export(collectionName, password, callBack)`
 The `mm_export` method returns a dump of the collection. You generally don't call this method yourself.
 
 ## `MindMeld.import({sourceUrl, sourcePassword, collections, localPassword, ...options})`
@@ -40,7 +40,10 @@ Parameters:
 
 To export collection `col1`:
 
-	MindMeld.export('col1', 'password');
+	MindMeld.export('col1', 'password', (err,res) => {
+		if (err) console.warn(err);
+		console.log(res);
+	});
 
 To import collections `col1` & `col2` from instance `http://xx.yy.zz`:
 

@@ -1,9 +1,6 @@
 MindMeld = {
-  export(collectionName, password) {
-    Meteor.call('mm_export', collectionName, password, function(err, res) {
-      if (err) console.warn(err);
-      console.log('[MindMeld] exporting', res);
-    });
+  export(collectionName, password, callBack) {
+    Meteor.call('mm_export', collectionName, password, callBack);
   },
   import(options) {
     Meteor.call('mm_import', options);
