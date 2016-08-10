@@ -25,11 +25,11 @@ Meteor.methods({
       enableHooks: Match.Optional(Boolean) // enables https://github.com/matb33/meteor-collection-hooks#direct-access-circumventing-hooks
     });
 
+    if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.password)
+      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
+
     if (!Meteor.settings.mindmeld || !Meteor.settings.mindmeld.allowImport)
       throw new Meteor.Error('import not allowed according to Meteor.settings.mindmeld.allowImport');
-
-    if (!Meteor.settings.mindmeld.password)
-      throw new Meteor.Error('no password set in Meteor.settings.mindmeld.password');
 
     if (options.localPassword !== Meteor.settings.mindmeld.password)
       throw new Meteor.Error('incorrect localPassword');
@@ -62,7 +62,7 @@ MindMeld = {
 
     const dump = connection.call("mm_export", collectionName, options.sourcePassword);
     if (!dump || !dump.length) {
-      console.log('[MindMeld] nothing to import');
+      console.log('[MindMeld] nothing to import for ' + collectionName);
       return;
     }
 
@@ -88,4 +88,4 @@ MindMeld = {
 
 };
 
-Meteor.startup(() => !(Meteor.settings.mindmeld && Meteor.settings.mindmeld.password) && console.warn('MindMeld: no token set'));
+Meteor.startup(() => !(Meteor.settings.mindmeld && Meteor.settings.mindmeld.password) && console.warn('MindMeld: no password set at Meteor.settings.mindmeld.password'));

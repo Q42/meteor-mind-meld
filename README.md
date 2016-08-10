@@ -1,6 +1,6 @@
 # q42:mind-meld
 
-Easily transfer collection data from one Meteor instance to another, using DDP methods. Used to easily get production data on your development or acceptance environment.
+Easily transfer collection data from one Meteor instance to another. Used to easily get production data on your development or acceptance environment without having to access your mongo database.
 Most suitable for small datasets.
 
 ## Installation
